@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VPS 服务总览 · 43.153.148.187</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2128;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --yellow: #d29922;
+    --red: #f85149;
+    --orange: #db6d28;
+    --purple: #bc8cff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", monospace, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.6;
+    min-height: 100vh;
+  }
+  .header {
+    background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 24px 24px;
+    text-align: center;
+  }
+  .header .host {
+    font-family: "Cascadia Code", "Fira Code", "JetBrains Mono", monospace;
+    font-size: 1.6em; font-weight: 700; color: var(--accent);
+  }
+  .header .sub { color: var(--muted); margin-top: 4px; font-size: .9em; }
+  .header .warn {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 12px; padding: 6px 16px;
+    background: rgba(248,81,73,.1); border: 1px solid rgba(248,81,73,.3);
+    border-radius: 6px; font-size: .82em; color: var(--red);
+  }
+  .warn-icon { font-size: 1em; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 32px 20px 64px; }
+
+  .section { margin-bottom: 40px; }
+  .section-title {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 1.1em; font-weight: 700; margin-bottom: 16px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    width: 28px; height: 28px; border-radius: 6px;
+    background: var(--accent); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .8em; font-weight: 800; flex-shrink: 0;
+  }
+
+  /* Port card grid */
+  .ports { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 12px; }
+  .port-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; position: relative;
+    overflow: hidden;
+  }
+  .port-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+    width: 3px; border-radius: 3px 0 0 3px;
+  }
+  .port-card.live::before { background: var(--green); }
+  .port-card.warn::before { background: var(--yellow); }
+  .port-card.danger::before { background: var(--red); }
+  .port-card.internal::before { background: var(--purple); }
+  .port-card.muted::before { background: var(--muted); }
+
+  .port-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .port-badge {
+    font-family: "Cascadia Code", "Fira Code", monospace;
+    background: var(--bg); border: 1px solid var(--border);
+    padding: 2px 10px; border-radius: 4px; font-size: .85em; font-weight: 600;
+    color: var(--text);
+  }
+  .status-dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+  }
+  .status-dot.live { background: var(--green); box-shadow: 0 0 6px rgba(63,185,80,.5); }
+  .status-dot.warn { background: var(--yellow); box-shadow: 0 0 6px rgba(210,153,34,.5); }
+  .status-dot.danger { background: var(--red); box-shadow: 0 0 6px rgba(248,81,73,.5); }
+  .status-dot.internal { background: var(--purple); box-shadow: 0 0 6px rgba(188,140,255,.5); }
+  .status-dot.muted { background: var(--muted); }
+  .port-card h3 { font-size: .95em; font-weight: 600; margin-bottom: 4px; }
+  .port-card .desc { font-size: .8em; color: var(--muted); margin-bottom: 8px; }
+  .port-link {
+    display: inline-block; font-size: .78em; color: var(--accent);
+    text-decoration: none; word-break: break-all;
+    padding: 3px 8px; background: rgba(88,166,255,.08); border-radius: 4px;
+  }
+  .port-link:hover { text-decoration: underline; }
+  .note {
+    font-size: .75em; color: var(--yellow); margin-top: 6px;
+    padding: 4px 8px; background: rgba(210,153,34,.08); border-radius: 4px;
+    border-left: 2px solid var(--yellow);
+  }
+
+  /* Table for infra */
+  .infra-table {
+    width: 100%; border-collapse: collapse; font-size: .88em;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    overflow: hidden;
+  }
+  .infra-table th {
+    background: var(--surface2); text-align: left;
+    padding: 10px 14px; font-weight: 600; color: var(--muted);
+    border-bottom: 1px solid var(--border); font-size: .8em;
+  }
+  .infra-table td {
+    padding: 8px 14px; border-bottom: 1px solid var(--border);
+  }
+  .infra-table tr:last-child td { border-bottom: none; }
+  .infra-table .port-col {
+    font-family: "Cascadia Code", "Fira Code", monospace;
+    color: var(--accent); font-weight: 600; white-space: nowrap;
+  }
+
+  /* Security panel */
+  .security-panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden;
+  }
+  .security-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 14px 16px; font-weight: 700; font-size: .95em;
+    border-bottom: 1px solid var(--border);
+  }
+  .security-header.risk-high { background: rgba(248,81,73,.1); color: var(--red); }
+  .security-header.risk-mid { background: rgba(210,153,34,.1); color: var(--yellow); }
+  .security-header.risk-ok { background: rgba(63,185,80,.1); color: var(--green); }
+  .security-body { padding: 12px 16px; font-size: .85em; color: var(--text); }
+  .security-body p { margin-bottom: 8px; }
+  .security-body p:last-child { margin-bottom: 0; }
+
+  /* Firewall note */
+  .firewall {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; margin-bottom: 40px;
+    display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start;
+  }
+  .firewall .fw-icon { font-size: 1.8em; flex-shrink: 0; }
+  .firewall .fw-text { flex: 1; min-width: 240px; font-size: .85em; color: var(--text); }
+  .firewall .fw-text strong { color: var(--green); }
+  .firewall .fw-text .detail { color: var(--muted); margin-top: 4px; }
+
+  /* Tailscale panel */
+  .tailscale-list { list-style: none; padding: 0; margin: 0; }
+  .tailscale-list li {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px; margin-bottom: 6px;
+  }
+  .tailscale-list li:last-child { margin-bottom: 0; }
+  .tailscale-list .t-port {
+    font-family: monospace; color: var(--purple); font-weight: 600;
+    font-size: .85em; min-width: 140px;
+  }
+  .tailscale-list .t-name { color: var(--text); font-size: .85em; flex: 1; }
+
+  footer {
+    text-align: center; padding: 24px; color: var(--muted);
+    font-size: .8em; border-top: 1px solid var(--border);
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="host">43.153.148.187</div>
+  <div class="sub">腾讯云 VPS · 服务总览 · 2026.09</div>
+  <div class="warn">
+    <span class="warn-icon">⚠️</span>
+    本页内容公开可见，请勿存放敏感凭据
+  </div>
+</div>
+
+<div class="container">
+
+<!-- Section 1: Web Services -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-num">1</div>
+    <span>🌐 浏览器可直接访问的 Web 服务（公网）</span>
+  </div>
+  <div class="ports">
+
+    <div class="port-card live">
+      <div class="port-row">
+        <span class="port-badge">:80</span>
+        <span class="status-dot live"></span>
+        <span style="font-size:.72em;color:var(--green)">公网可达</span>
+      </div>
+      <h3>🤖 AI 智能助手</h3>
+      <p class="desc">typewriter 前端(Vite) + Java 后端(:8081)</p>
+      <a class="port-link" href="http://43.153.148.187/" target="_blank">http://43.153.148.187/</a>
+    </div>
+
+    <div class="port-card live">
+      <div class="port-row">
+        <span class="port-badge">:8898</span>
+        <span class="status-dot live"></span>
+        <span style="font-size:.72em;color:var(--green)">公网可达</span>
+      </div>
+      <h3>🌿 枸益补·道地本草商城</h3>
+      <p class="desc">商城前台 mall-web</p>
+      <a class="port-link" href="http://43.153.148.187:8898/" target="_blank">http://43.153.148.187:8898/</a>
+    </div>
+
+    <div class="port-card live">
+      <div class="port-row">
+        <span class="port-badge">:8899</span>
+        <span class="status-dot live"></span>
+        <span style="font-size:.72em;color:var(--green)">公网可达</span>
+      </div>
+      <h3>📊 商城管理后台</h3>
+      <p class="desc">mall-manage 后台管理</p>
+      <a class="port-link" href="http://43.153.148.187:8899/" target="_blank">http://43.153.148.187:8899/</a>
+    </div>
+
+    <div class="port-card danger">
+      <div class="port-row">
+        <span class="port-badge">:8897</span>
+        <span class="status-dot danger"></span>
+        <span style="font-size:.72em;color:var(--red)">⚠ 无鉴权</span>
+      </div>
+      <h3>🗄️ LibreDB Studio</h3>
+      <p class="desc">通用数据库编辑器(Docker, libredb)</p>
+      <a class="port-link" href="http://43.153.148.187:8897/" target="_blank">http://43.153.148.187:8897/</a>
+      <div class="note">Docker 直接映射公网、无鉴权返回 200。建议改绑 Tailscale 或加 Nginx 认证。</div>
+    </div>
+
+    <div class="port-card warn">
+      <div class="port-row">
+        <span class="port-badge">:888</span>
+        <span class="status-dot warn"></span>
+        <span style="font-size:.72em;color:var(--yellow)">⚠ 宝塔自带</span>
+      </div>
+      <h3>phpMyAdmin</h3>
+      <p class="desc">宝塔面板自带的 phpMyAdmin</p>
+      <a class="port-link" href="http://43.153.148.187:888/" target="_blank">http://43.153.148.187:888/</a>
+      <div class="note">根路径 404，需带具体路径。建议改路径或限 IP。</div>
+    </div>
+
+    <div class="port-card warn">
+      <div class="port-row">
+        <span class="port-badge">:8888</span>
+        <span class="status-dot warn"></span>
+        <span style="font-size:.72em;color:var(--yellow)">⚠ 宝塔面板</span>
+      </div>
+      <h3>🛡️ 宝塔面板 BT-Panel</h3>
+      <p class="desc">服务器管理面板</p>
+      <a class="port-link" href="http://43.153.148.187:8888/" target="_blank">http://43.153.148.187:8888/</a>
+    </div>
+
+    <div class="port-card live">
+      <div class="port-row">
+        <span class="port-badge">:3081</span>
+        <span class="status-dot live"></span>
+        <span style="font-size:.72em;color:var(--green)">✅ 需令牌</span>
+      </div>
+      <h3>🤖 Hermes Agent 面板</h3>
+      <p class="desc">dsh web，401 需令牌</p>
+      <a class="port-link" href="http://43.153.148.187:3081/" target="_blank">http://43.153.148.187:3081/</a>
+    </div>
+
+    <div class="port-card warn">
+      <div class="port-row">
+        <span class="port-badge">:4000</span>
+        <span class="status-dot warn"></span>
+        <span style="font-size:.72em;color:var(--yellow)">⚠ 开发预览</span>
+      </div>
+      <h3>✍️ 创业思考博客</h3>
+      <p class="desc">hexo server 预览（9月6日启动，0.0.0.0 绑定）</p>
+      <a class="port-link" href="http://43.153.148.187:4000/" target="_blank">http://43.153.148.187:4000/</a>
+      <div class="note">开发预览非正式部署，博客正式版在 GitHub Pages。建议改绑 127.0.0.1。</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Section 2: API / Backend -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-num">2</div>
+    <span>⚙️ API / 后端服务（不直接看）</span>
+  </div>
+  <div class="ports">
+
+    <div class="port-card muted">
+      <div class="port-row">
+        <span class="port-badge">:3000</span>
+        <span class="status-dot muted"></span>
+        <span style="font-size:.72em;color:var(--muted)">内部服务</span>
+      </div>
+      <h3>mall-server API</h3>
+      <p class="desc">pm2 常驻37天，nginx 反向代理给 8898/8899 用</p>
+      <div class="note">SQLite 在 /var/www/mall/mall-server/mall.db</div>
+    </div>
+
+    <div class="port-card muted">
+      <div class="port-row">
+        <span class="port-badge">:8081</span>
+        <span class="status-dot muted"></span>
+        <span style="font-size:.72em;color:var(--muted)">内部服务</span>
+      </div>
+      <h3>AI-typewriter Java 后端</h3>
+      <p class="desc">nginx 代理给 80 端口用</p>
+      <div class="note">含 DeepSeek API Key 环境变量</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Section 3: Tailscale -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-num">3</div>
+    <span>🔒 仅 Tailscale 内网可达（公网访问不到）</span>
+  </div>
+  <ul class="tailscale-list">
+    <li>
+      <span class="t-port">100.64.254.79:1080</span>
+      <span class="t-name">🔌 microsocks — SOCKS5 代理</span>
+    </li>
+    <li>
+      <span class="t-port">100.64.254.79:8080</span>
+      <span class="t-name">🔌 httpproxy.py — HTTP 代理</span>
+    </li>
+    <li>
+      <span class="t-port">100.64.254.79:50400</span>
+      <span class="t-name">🔌 tailscaled — Tailscale 自身</span>
+    </li>
+  </ul>
+</div>
+
+<!-- Section 4: Infrastructure -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-num">4</div>
+    <span>🧱 基础设施（非浏览器服务）</span>
+  </div>
+  <table class="infra-table">
+    <thead>
+      <tr><th>端口</th><th>服务</th><th>备注</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="port-col">22</td>
+        <td>SSH</td>
+        <td>远程管理</td>
+      </tr>
+      <tr>
+        <td class="port-col">25</td>
+        <td>Postfix</td>
+        <td>邮件服务</td>
+      </tr>
+      <tr>
+        <td class="port-col">21115 / 21116 / 21118</td>
+        <td>RustDesk hbbs</td>
+        <td>远程桌面信令</td>
+      </tr>
+      <tr>
+        <td class="port-col">21117 / 21119</td>
+        <td>RustDesk hbbr</td>
+        <td>中继（被截断未显示全）</td>
+      </tr>
+      <tr>
+        <td class="port-col">6010</td>
+        <td>sshd X11 转发</td>
+        <td>仅本机回环</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Firewall -->
+<div class="firewall">
+  <div class="fw-icon">🔥</div>
+  <div class="fw-text">
+    <strong>防火墙状态：iptables 策略 ACCEPT</strong>
+    <div class="detail">YJ-FIREWALL 只按 IP 黑名单 REJECT（已拦 100+ 扫描 IP），不拦端口。</div>
+    <div class="detail">⚠️ 所有 0.0.0.0 绑定端口理论上公网可达，最终取决于腾讯云安全组放行规则。</div>
+  </div>
+</div>
+
+<!-- Security Notes -->
+<div class="section">
+  <div class="section-title">
+    <div class="section-num">!</div>
+    <span>🔐 安全注意事项</span>
+  </div>
+
+  <div class="security-panel" style="margin-bottom:12px">
+    <div class="security-header risk-high">
+      <span>🚨</span> 高风险 — LibreDB Studio (:8897)
+    </div>
+    <div class="security-body">
+      <p>Docker 直接映射到公网、无鉴权返回 200。任何人只要能连上就能操作你的数据库连接。</p>
+      <p><strong>建议：</strong>至少绑到 Tailscale 内网地址，或加 Nginx 反向代理 + Basic Auth。</p>
+    </div>
+  </div>
+
+  <div class="security-panel" style="margin-bottom:12px">
+    <div class="security-header risk-mid">
+      <span>⚠️</span> 中风险 — phpMyAdmin (:888) + 宝塔面板 (:8888)
+    </div>
+    <div class="security-body">
+      <p>公网裸奔，是被扫描爆破的重灾区。宝塔有登录保护还好，phpMyAdmin 建议改路径或限 IP。</p>
+    </div>
+  </div>
+
+  <div class="security-panel" style="margin-bottom:12px">
+    <div class="security-header risk-mid">
+      <span>⚠️</span> 中风险 — Hexo 预览服务 (:4000)
+    </div>
+    <div class="security-body">
+      <p>开发预览服务，不是正式部署（博客正式版在 GitHub Pages）。没必要对公网开放。</p>
+      <p><strong>建议：</strong>改为绑定 127.0.0.1，仅本机访问。</p>
+    </div>
+  </div>
+
+  <div class="security-panel">
+    <div class="security-header risk-ok">
+      <span>✅</span> 安全 — Hermes Agent (:3081)
+    </div>
+    <div class="security-body">
+      <p>有 401 令牌保护，没问题。</p>
+    </div>
+  </div>
+</div>
+
+</div><!-- .container -->
+
+<footer>
+  <p>VPS 服务总览 · 43.153.148.187 · 最后更新: 2026-09-08</p>
+  <p style="margin-top:4px"><a href="/">← 返回首页</a></p>
+</footer>
+
+</body>
+</html>
