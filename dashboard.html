@@ -4,8 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>VPS 服务总览 · 43.153.148.187</title>
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light');</script>
 <style>
   :root {
+    --bg: #f6f8fa;
+    --surface: #ffffff;
+    --surface2: #eaeef2;
+    --border: #d0d7de;
+    --text: #1f2328;
+    --muted: #656d76;
+    --accent: #0969da;
+    --green: #1a7f37;
+    --yellow: #9a6700;
+    --red: #cf222e;
+    --orange: #bc4c00;
+    --purple: #8250df;
+    --bg-grad: linear-gradient(135deg, #f0f2f5 0%, #f6f8fa 100%);
+  }
+  [data-theme="dark"] {
     --bg: #0d1117;
     --surface: #161b22;
     --surface2: #1c2128;
@@ -18,18 +34,22 @@
     --red: #f85149;
     --orange: #db6d28;
     --purple: #bc8cff;
+    --bg-grad: linear-gradient(135deg, #1a1f2e 0%, #0d1117 100%);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans SC", monospace, sans-serif;
     background: var(--bg); color: var(--text); line-height: 1.6;
     min-height: 100vh;
+    transition: background .25s, color .25s;
   }
   .header {
-    background: linear-gradient(135deg, #1a1f2e 0%, #0d1117 100%);
+    background: var(--bg-grad);
     border-bottom: 1px solid var(--border);
     padding: 32px 24px 24px;
     text-align: center;
+    position: relative;
+    transition: border-color .25s;
   }
   .header .host {
     font-family: "Cascadia Code", "Fira Code", "JetBrains Mono", monospace;
@@ -39,10 +59,23 @@
   .header .warn {
     display: inline-flex; align-items: center; gap: 6px;
     margin-top: 12px; padding: 6px 16px;
-    background: rgba(248,81,73,.1); border: 1px solid rgba(248,81,73,.3);
+    background: rgba(248,81,73,.08); border: 1px solid rgba(248,81,73,.25);
     border-radius: 6px; font-size: .82em; color: var(--red);
   }
   .warn-icon { font-size: 1em; }
+  .theme-toggle {
+    position: absolute; top: 16px; right: 16px;
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1px solid var(--border); background: var(--surface);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 1.1em; transition: border-color .2s, background .2s;
+    z-index: 10;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .theme-toggle .moon { display: block; }
+  .theme-toggle .sun { display: none; }
+  [data-theme="dark"] .theme-toggle .moon { display: none; }
+  [data-theme="dark"] .theme-toggle .sun { display: block; }
 
   .container { max-width: 1100px; margin: 0 auto; padding: 32px 20px 64px; }
 
@@ -51,20 +84,22 @@
     display: flex; align-items: center; gap: 10px;
     font-size: 1.1em; font-weight: 700; margin-bottom: 16px;
     padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    transition: border-color .25s;
   }
   .section-num {
     width: 28px; height: 28px; border-radius: 6px;
     background: var(--accent); color: var(--bg);
     display: flex; align-items: center; justify-content: center;
     font-size: .8em; font-weight: 800; flex-shrink: 0;
+    transition: background .25s, color .25s;
   }
 
-  /* Port card grid */
   .ports { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 12px; }
   .port-card {
     background: var(--surface); border: 1px solid var(--border);
     border-radius: 10px; padding: 16px; position: relative;
     overflow: hidden;
+    transition: background .25s, border-color .25s;
   }
   .port-card::before {
     content: ''; position: absolute; left: 0; top: 0; bottom: 0;
@@ -82,6 +117,7 @@
     background: var(--bg); border: 1px solid var(--border);
     padding: 2px 10px; border-radius: 4px; font-size: .85em; font-weight: 600;
     color: var(--text);
+    transition: background .25s, border-color .25s;
   }
   .status-dot {
     width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
@@ -96,28 +132,34 @@
   .port-link {
     display: inline-block; font-size: .78em; color: var(--accent);
     text-decoration: none; word-break: break-all;
-    padding: 3px 8px; background: rgba(88,166,255,.08); border-radius: 4px;
+    padding: 3px 8px; background: rgba(9,105,218,.06); border-radius: 4px;
+    transition: background .25s;
   }
+  [data-theme="dark"] .port-link { background: rgba(88,166,255,.08); }
   .port-link:hover { text-decoration: underline; }
   .note {
     font-size: .75em; color: var(--yellow); margin-top: 6px;
-    padding: 4px 8px; background: rgba(210,153,34,.08); border-radius: 4px;
+    padding: 4px 8px; background: rgba(210,153,34,.06); border-radius: 4px;
     border-left: 2px solid var(--yellow);
+    transition: background .25s;
   }
+  [data-theme="dark"] .note { background: rgba(210,153,34,.1); }
 
-  /* Table for infra */
   .infra-table {
     width: 100%; border-collapse: collapse; font-size: .88em;
     background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
     overflow: hidden;
+    transition: background .25s, border-color .25s;
   }
   .infra-table th {
     background: var(--surface2); text-align: left;
     padding: 10px 14px; font-weight: 600; color: var(--muted);
     border-bottom: 1px solid var(--border); font-size: .8em;
+    transition: background .25s, border-color .25s;
   }
   .infra-table td {
     padding: 8px 14px; border-bottom: 1px solid var(--border);
+    transition: border-color .25s;
   }
   .infra-table tr:last-child td { border-bottom: none; }
   .infra-table .port-col {
@@ -125,40 +167,41 @@
     color: var(--accent); font-weight: 600; white-space: nowrap;
   }
 
-  /* Security panel */
   .security-panel {
     background: var(--surface); border: 1px solid var(--border);
     border-radius: 10px; overflow: hidden;
+    transition: background .25s, border-color .25s;
   }
   .security-header {
     display: flex; align-items: center; gap: 8px;
     padding: 14px 16px; font-weight: 700; font-size: .95em;
     border-bottom: 1px solid var(--border);
+    transition: border-color .25s;
   }
-  .security-header.risk-high { background: rgba(248,81,73,.1); color: var(--red); }
-  .security-header.risk-mid { background: rgba(210,153,34,.1); color: var(--yellow); }
-  .security-header.risk-ok { background: rgba(63,185,80,.1); color: var(--green); }
+  .security-header.risk-high { background: rgba(248,81,73,.08); color: var(--red); }
+  .security-header.risk-mid { background: rgba(210,153,34,.08); color: var(--yellow); }
+  .security-header.risk-ok { background: rgba(63,185,80,.08); color: var(--green); }
   .security-body { padding: 12px 16px; font-size: .85em; color: var(--text); }
   .security-body p { margin-bottom: 8px; }
   .security-body p:last-child { margin-bottom: 0; }
 
-  /* Firewall note */
   .firewall {
     background: var(--surface); border: 1px solid var(--border);
     border-radius: 10px; padding: 16px; margin-bottom: 40px;
     display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start;
+    transition: background .25s, border-color .25s;
   }
   .firewall .fw-icon { font-size: 1.8em; flex-shrink: 0; }
   .firewall .fw-text { flex: 1; min-width: 240px; font-size: .85em; color: var(--text); }
   .firewall .fw-text strong { color: var(--green); }
   .firewall .fw-text .detail { color: var(--muted); margin-top: 4px; }
 
-  /* Tailscale panel */
   .tailscale-list { list-style: none; padding: 0; margin: 0; }
   .tailscale-list li {
     display: flex; align-items: center; gap: 10px;
     padding: 8px 12px; background: var(--surface);
     border: 1px solid var(--border); border-radius: 8px; margin-bottom: 6px;
+    transition: background .25s, border-color .25s;
   }
   .tailscale-list li:last-child { margin-bottom: 0; }
   .tailscale-list .t-port {
@@ -170,6 +213,7 @@
   footer {
     text-align: center; padding: 24px; color: var(--muted);
     font-size: .8em; border-top: 1px solid var(--border);
+    transition: border-color .25s;
   }
   footer a { color: var(--accent); text-decoration: none; }
   footer a:hover { text-decoration: underline; }
@@ -178,6 +222,10 @@
 <body>
 
 <div class="header">
+  <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+    <span class="moon">🌙</span>
+    <span class="sun">☀️</span>
+  </button>
   <div class="host">43.153.148.187</div>
   <div class="sub">腾讯云 VPS · 服务总览 · 2026.09</div>
   <div class="warn">
@@ -447,6 +495,15 @@
   <p>VPS 服务总览 · 43.153.148.187 · 最后更新: 2026-09-08</p>
   <p style="margin-top:4px"><a href="/">← 返回首页</a></p>
 </footer>
+
+<script>
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+}
+</script>
 
 </body>
 </html>

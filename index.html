@@ -4,8 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>yoy-aww · 个人作品</title>
+<script>document.documentElement.setAttribute('data-theme', localStorage.getItem('theme') || 'light');</script>
 <style>
   :root {
+    --bg: #f6f8fa;
+    --card: #ffffff;
+    --border: #d0d7de;
+    --text: #1f2328;
+    --muted: #656d76;
+    --accent: #0969da;
+    --accent2: #bc4c00;
+    --tag-bg: rgba(9,105,218,.08);
+    --tag-border: rgba(9,105,218,.2);
+  }
+  [data-theme="dark"] {
     --bg: #0d1117;
     --card: #161b22;
     --border: #30363d;
@@ -14,6 +26,7 @@
     --accent: #58a6ff;
     --accent2: #f0883e;
     --tag-bg: rgba(88,166,255,.12);
+    --tag-border: rgba(88,166,255,.2);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -21,11 +34,14 @@
     background: var(--bg);
     color: var(--text);
     line-height: 1.6;
+    transition: background .25s, color .25s;
   }
   .hero {
     text-align: center;
     padding: 80px 20px 60px;
     border-bottom: 1px solid var(--border);
+    position: relative;
+    transition: border-color .25s;
   }
   .hero h1 { font-size: 2.4em; font-weight: 700; }
   .hero p { color: var(--muted); margin-top: 12px; font-size: 1.1em; }
@@ -37,6 +53,19 @@
     font-size: .95em; transition: border-color .2s;
   }
   .hero .github:hover { border-color: var(--accent); }
+  .theme-toggle {
+    position: absolute; top: 20px; right: 20px;
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 1px solid var(--border); background: var(--card);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 1.15em; transition: border-color .2s, background .2s;
+    z-index: 10;
+  }
+  .theme-toggle:hover { border-color: var(--accent); }
+  .theme-toggle .moon { display: block; }
+  .theme-toggle .sun { display: none; }
+  [data-theme="dark"] .theme-toggle .moon { display: none; }
+  [data-theme="dark"] .theme-toggle .sun { display: block; }
   .projects {
     max-width: 1100px; margin: 0 auto; padding: 48px 20px 80px;
     display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -48,7 +77,7 @@
     border-radius: 12px;
     padding: 28px;
     display: flex; flex-direction: column;
-    transition: border-color .2s, transform .15s;
+    transition: border-color .2s, transform .15s, background .25s;
   }
   .card:hover { border-color: var(--accent); transform: translateY(-2px); }
   .card-num {
@@ -61,7 +90,8 @@
   .tag {
     font-size: .78em; padding: 3px 10px;
     background: var(--tag-bg); color: var(--accent);
-    border-radius: 4px; border: 1px solid rgba(88,166,255,.2);
+    border-radius: 4px; border: 1px solid var(--tag-border);
+    transition: background .25s;
   }
   .visit {
     display: inline-flex; align-items: center; gap: 6px;
@@ -69,17 +99,23 @@
     font-weight: 500; transition: color .2s;
   }
   .visit:hover { color: #79c0ff; }
+  [data-theme="light"] .visit:hover { color: #0550ae; }
   .visit svg { flex-shrink: 0; }
   footer {
     text-align: center; padding: 32px 20px;
     color: var(--muted); font-size: .85em;
     border-top: 1px solid var(--border);
+    transition: border-color .25s;
   }
 </style>
 </head>
 <body>
 
 <div class="hero">
+  <button class="theme-toggle" onclick="toggleTheme()" title="切换主题">
+    <span class="moon">🌙</span>
+    <span class="sun">☀️</span>
+  </button>
   <h1>👋 yoy-aww</h1>
   <p>个人作品展示集</p>
   <a class="github" href="https://github.com/yoy-aww" target="_blank">
@@ -175,6 +211,15 @@
 <footer>
   &copy; 2026 yoy-aww · Built with ❤️
 </footer>
+
+<script>
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+}
+</script>
 
 </body>
 </html>
