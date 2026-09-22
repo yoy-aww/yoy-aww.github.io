@@ -21,7 +21,6 @@
 ├── index.html        # 首页 — 作品展示
 ├── dashboard.html    # 仪表盘 — VPS 服务总览
 ├── favicon.png       # 站点图标
-├── 19771011.png      # 图标源文件
 └── README.md
 ```
 
