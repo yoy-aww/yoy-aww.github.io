@@ -403,6 +403,18 @@
       <div class="note">pm2 常驻，TURN 凭证密钥在 coturn 配置中</div>
     </div>
 
+    <div class="port-card muted">
+      <div class="port-row">
+        <span class="port-badge">:8082</span>
+        <span class="status-dot live"></span>
+        <span style="font-size:.72em;color:var(--green)">公网可达</span>
+      </div>
+      <h3>🔄 BPMN 工作流平台</h3>
+      <p class="desc">Docker Compose 四服务编排：nginx(8082) + Node.js 中间层(3002) + Flowable(8081) + MySQL(3306)</p>
+      <a class="port-link" href="http://43.153.148.187:8082/" target="_blank">http://43.153.148.187:8082/</a>
+      <div class="note">Docker 容器服务，重启需 docker compose up -d</div>
+    </div>
+
   </div>
 </div>
 
