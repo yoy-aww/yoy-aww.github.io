@@ -251,9 +251,21 @@
         <span class="status-dot live"></span>
         <span style="font-size:.72em;color:var(--green)">公网可达</span>
       </div>
+      <h3>📺 LiveStream 直播</h3>
+      <p class="desc">React+Vite 前端 + Express 后端(:5000) + coturn TURN(:3478)，HTTPS 域名入口</p>
+      <a class="port-link" href="https://43.153.148.187.nip.io/" target="_blank">https://43.153.148.187.nip.io/</a>
+      <div class="note">HTTP 80 已 301 到此 HTTPS nip.io 域名，摄像头需 HTTPS 上下文。</div>
+    </div>
+
+    <div class="port-card live">
+      <div class="port-row">
+        <span class="port-badge">:3001</span>
+        <span class="status-dot live"></span>
+        <span style="font-size:.72em;color:var(--green)">公网可达</span>
+      </div>
       <h3>🤖 AI 智能助手</h3>
       <p class="desc">typewriter 前端(Vite) + Java 后端(:8081)</p>
-      <a class="port-link" href="http://43.153.148.187/" target="_blank">http://43.153.148.187/</a>
+      <a class="port-link" href="http://43.153.148.187:3001/" target="_blank">http://43.153.148.187:3001/</a>
     </div>
 
     <div class="port-card live">
@@ -315,6 +327,17 @@
 
     <div class="port-card live">
       <div class="port-row">
+        <span class="port-badge">:8890</span>
+        <span class="status-dot live"></span>
+        <span style="font-size:.72em;color:var(--green)">公网可达</span>
+      </div>
+      <h3>🧒 少儿编程 IDE</h3>
+      <p class="desc">浏览器端 C++ 在线编程环境，纯前端 Web Worker 执行 + 自研解释器</p>
+      <a class="port-link" href="http://43.153.148.187:8890/" target="_blank">http://43.153.148.187:8890/</a>
+    </div>
+
+    <div class="port-card live">
+      <div class="port-row">
         <span class="port-badge">:3081</span>
         <span class="status-dot live"></span>
         <span style="font-size:.72em;color:var(--green)">✅ 需令牌</span>
@@ -334,6 +357,17 @@
       <p class="desc">hexo server 预览（9月6日启动，0.0.0.0 绑定）</p>
       <a class="port-link" href="http://43.153.148.187:4000/" target="_blank">http://43.153.148.187:4000/</a>
       <div class="note">开发预览非正式部署，博客正式版在 GitHub Pages。建议改绑 127.0.0.1。</div>
+    </div>
+
+    <div class="port-card live">
+      <div class="port-row">
+        <span class="port-badge">:8850</span>
+        <span class="status-dot live"></span>
+        <span style="font-size:.72em;color:var(--green)">公网可达</span>
+      </div>
+      <h3>💬 WebQQ 网页版QQ</h3>
+      <p class="desc">React+Ant Design 前端 + Express 后端(:3010) + Socket.IO 实时通讯</p>
+      <a class="port-link" href="http://43.153.148.187:8850/" target="_blank">http://43.153.148.187:8850/</a>
     </div>
 
   </div>
@@ -365,8 +399,42 @@
         <span style="font-size:.72em;color:var(--muted)">内部服务</span>
       </div>
       <h3>AI-typewriter Java 后端</h3>
-      <p class="desc">nginx 代理给 80 端口用</p>
+      <p class="desc">nginx 代理给 3001 端口用</p>
       <div class="note">含 DeepSeek API Key 环境变量</div>
+    </div>
+
+    <div class="port-card muted">
+      <div class="port-row">
+        <span class="port-badge">:5000</span>
+        <span class="status-dot muted"></span>
+        <span style="font-size:.72em;color:var(--muted)">内部服务</span>
+      </div>
+      <h3>livestream-server API</h3>
+      <p class="desc">Express + Socket.IO，nginx 代理给 80 端口用</p>
+      <div class="note">pm2 常驻，TURN 凭证密钥在 coturn 配置中</div>
+    </div>
+
+    <div class="port-card muted">
+      <div class="port-row">
+        <span class="port-badge">:8082</span>
+        <span class="status-dot live"></span>
+        <span style="font-size:.72em;color:var(--green)">公网可达</span>
+      </div>
+      <h3>🔄 BPMN 工作流平台</h3>
+      <p class="desc">Docker Compose 四服务编排：nginx(8082) + Node.js 中间层(3002) + Flowable(8081) + MySQL(3306)</p>
+      <a class="port-link" href="http://43.153.148.187:8082/" target="_blank">http://43.153.148.187:8082/</a>
+      <div class="note">Docker 容器服务，重启需 docker compose up -d</div>
+    </div>
+
+    <div class="port-card muted">
+      <div class="port-row">
+        <span class="port-badge">:3010</span>
+        <span class="status-dot muted"></span>
+        <span style="font-size:.72em;color:var(--muted)">内部服务</span>
+      </div>
+      <h3>WebQQ 后端 API</h3>
+      <p class="desc">Express + Socket.IO，nginx 反向代理给 8850 端口用</p>
+      <div class="note">SQLite 在 /var/www/webQQ/server/data/webqq.db</div>
     </div>
 
   </div>
@@ -405,6 +473,11 @@
       <tr><th>端口</th><th>服务</th><th>备注</th></tr>
     </thead>
     <tbody>
+      <tr>
+        <td class="port-col">3478</td>
+        <td>coturn (TURN/STUN)</td>
+        <td>UDP+TCP，LiveStream WebRTC 中继</td>
+      </tr>
       <tr>
         <td class="port-col">22</td>
         <td>SSH</td>
@@ -493,7 +566,7 @@
 </div><!-- .container -->
 
 <footer>
-  <p>VPS 服务总览 · 43.153.148.187 · 最后更新: 2026-09-08</p>
+  <p>VPS 服务总览 · 43.153.148.187 · 最后更新: 2026-10-04</p>
   <p style="margin-top:4px"><a href="/">← 返回首页</a></p>
 </footer>
 
