@@ -359,6 +359,17 @@
       <div class="note">开发预览非正式部署，博客正式版在 GitHub Pages。建议改绑 127.0.0.1。</div>
     </div>
 
+    <div class="port-card live">
+      <div class="port-row">
+        <span class="port-badge">:8850</span>
+        <span class="status-dot live"></span>
+        <span style="font-size:.72em;color:var(--green)">公网可达</span>
+      </div>
+      <h3>💬 WebQQ 网页版QQ</h3>
+      <p class="desc">React+Ant Design 前端 + Express 后端(:3010) + Socket.IO 实时通讯</p>
+      <a class="port-link" href="http://43.153.148.187:8850/" target="_blank">http://43.153.148.187:8850/</a>
+    </div>
+
   </div>
 </div>
 
@@ -413,6 +424,17 @@
       <p class="desc">Docker Compose 四服务编排：nginx(8082) + Node.js 中间层(3002) + Flowable(8081) + MySQL(3306)</p>
       <a class="port-link" href="http://43.153.148.187:8082/" target="_blank">http://43.153.148.187:8082/</a>
       <div class="note">Docker 容器服务，重启需 docker compose up -d</div>
+    </div>
+
+    <div class="port-card muted">
+      <div class="port-row">
+        <span class="port-badge">:3010</span>
+        <span class="status-dot muted"></span>
+        <span style="font-size:.72em;color:var(--muted)">内部服务</span>
+      </div>
+      <h3>WebQQ 后端 API</h3>
+      <p class="desc">Express + Socket.IO，nginx 反向代理给 8850 端口用</p>
+      <div class="note">SQLite 在 /var/www/webQQ/server/data/webqq.db</div>
     </div>
 
   </div>
@@ -544,7 +566,7 @@
 </div><!-- .container -->
 
 <footer>
-  <p>VPS 服务总览 · 43.153.148.187 · 最后更新: 2026-09-23</p>
+  <p>VPS 服务总览 · 43.153.148.187 · 最后更新: 2026-10-04</p>
   <p style="margin-top:4px"><a href="/">← 返回首页</a></p>
 </footer>
 
