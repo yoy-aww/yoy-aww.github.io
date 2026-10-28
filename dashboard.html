@@ -370,6 +370,17 @@
       <a class="port-link" href="http://43.153.148.187:8850/" target="_blank">http://43.153.148.187:8850/</a>
     </div>
 
+    <div class="port-card live">
+      <div class="port-row">
+        <span class="port-badge">:8860</span>
+        <span class="status-dot live"></span>
+        <span style="font-size:.72em;color:var(--green)">公网可达</span>
+      </div>
+      <h3>📧 邮件发送器</h3>
+      <p class="desc">React+Ant Design 前端 + Express 后端(:3011) + SMTP 发信</p>
+      <a class="port-link" href="http://43.153.148.187:8860/" target="_blank">http://43.153.148.187:8860/</a>
+    </div>
+
   </div>
 </div>
 
@@ -435,6 +446,17 @@
       <h3>WebQQ 后端 API</h3>
       <p class="desc">Express + Socket.IO，nginx 反向代理给 8850 端口用</p>
       <div class="note">SQLite 在 /var/www/webQQ/server/data/webqq.db</div>
+    </div>
+
+    <div class="port-card muted">
+      <div class="port-row">
+        <span class="port-badge">:3011</span>
+        <span class="status-dot muted"></span>
+        <span style="font-size:.72em;color:var(--muted)">内部服务</span>
+      </div>
+      <h3>mails-agent 后端 API</h3>
+      <p class="desc">Express + Python smtplib，nginx 反向代理给 8860 端口用</p>
+      <div class="note">SMTP 凭据在 server/.env（gitignored），config.json 为运行时派生</div>
     </div>
 
   </div>
